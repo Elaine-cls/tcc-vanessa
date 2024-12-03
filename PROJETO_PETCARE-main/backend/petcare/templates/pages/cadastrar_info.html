@@ -1,0 +1,97 @@
+{%extends 'layouts/base.html'%}
+
+{%block title %}
+PetCare - Cadastrar Informações
+{%endblock%}
+
+{%block styles%}
+{% load static %}
+<link rel="stylesheet" href="{% static 'css/main.css' %}">
+<link rel="stylesheet" href="{% static 'css/forms.css' %}">
+{%endblock%}
+
+{%block content%}
+  <header class="navbar navbar-expand-lg navbar-light bg_orange_custom p-4" style="margin-bottom: 4rem;">
+    <h1 class="text-light">Agora insira suas informações</h1>
+  </header>
+  <main>
+    <div class="d-flex flex-column justify-content-center align-items-center">
+      <div style="max-width: 800px" class="container">
+        <div class="divisor">
+          <p>
+            Economize seu tempo com Mirante, caso já tenho um cadastro na plataforma clique no botão abaixo para usar suas informações já cadastradas.
+          </p>
+          <div class="d-flex justify-content-end">
+            <button class="btn btn-dark" id="mirante">
+              Cadastrar com Mirante
+            </button>
+          </div>
+        </div>
+        <p class="text-center">
+          <strong>Ou</strong><br/>
+          cadastra-se manualmente
+        </p>
+        <form id="registrationForm" class="needs-validation" novalidate>
+          <div class="container mt-5">
+            <div id="liveAlertPlaceholder"></div>
+          </div>
+          <div class="container divisor" style="margin-top: 3rem;">
+            <div class="row g-3 gap-3">
+              <div>
+                <input type="text" class="form-control input-c" placeholder="Nome *" aria-label="Nome" id="nome" required maxlength="200">
+                <div class="invalid-feedback" id="invalid-feedback-nome">
+                  Por favor, insira seu nome.
+                </div>
+              </div>
+              <div>
+                <input type="text" class="form-control input-c" placeholder="CPF *" data-mask="000.000.000-00" aria-label="CPF" id="cpf" required>
+                <div class="invalid-feedback" id="invalid-feedback-cpf">
+                  Por favor, insira seu CPF.
+                </div>
+              </div>
+              <div>
+                <input type="text" class="form-control input-c" placeholder="Telefone *" data-mask="+55 (00) 00000-0000" aria-label="Telefone" id="telefone" required>
+                <div class="invalid-feedback" id="invalid-feedback-telefone">
+                  Por favor, insira seu telefone.
+                </div>
+              </div>
+            </div>
+          </div>
+          <p class="text-center">
+            <strong>Localização</strong><br/>
+            É importante sabermos onde você se encontra para podermos buscar as clinicas mais próximas.
+          </p>
+          <div class="container" style="margin-top: 3rem;">
+            <div class="row g-3 gap-3">
+              <div>
+                <input type="text" class="form-control input-c" placeholder="CEP *" data-mask="000000-00" aria-label="CEP" id="cep" required maxlength="200">
+                <div class="invalid-feedback" id="invalid-feedback-cep">
+                  Por favor, insira seu cep.
+                </div>
+              </div>
+              <div>
+                <input type="text" class="form-control input-c" placeholder="Estado *" aria-label="Estado" id="estado" required maxlength="200">
+                <div class="invalid-feedback" id="invalid-feedback-estado">
+                  Por favor, insira seu estado.
+                </div>
+              </div>
+              <div>
+                <input type="text" class="form-control input-c" placeholder="Cidade *" aria-label="Cidade" id="cidade" required>
+                <div class="invalid-feedback" id="invalid-feedback-cidade">
+                  Por favor, insira sua cidade.
+                </div>
+              </div>
+              <div class="container-form-button">
+                <button class="btn btn-form">Finalizar</button>
+              </div>
+            </div>
+          </div>
+      </form>
+      </div>
+    </div>
+    
+  </main>
+  <script type="module" src="{% static 'js/cadastrar-info.js' %}"></script>
+  <script src="{%static 'js/plugins/jquery/jquery-3.7.1.min.js' %}"></script>
+  <script src="{% static 'js/plugins/jQuery-Mask-Plugin-master/src/jquery.mask.js'%}"></script>
+{%endblock%}

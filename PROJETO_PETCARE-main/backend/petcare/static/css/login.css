@@ -1,0 +1,7 @@
+@import "main.css";
+@import "forms.css";
+
+.container-login{
+    max-width: 600px;
+    margin-top: 5rem;
+}

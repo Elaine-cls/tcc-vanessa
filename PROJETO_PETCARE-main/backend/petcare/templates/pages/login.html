@@ -1,0 +1,44 @@
+{%extends 'layouts/base.html'%}
+
+{%block title %}
+PetCare - Login
+{%endblock%}
+
+{%block styles%}
+{% load static %}
+<link rel="stylesheet" href="{% static 'css/login.css' %}">
+{%endblock%}
+
+{%block content%}
+<main>
+    <div class="container container-login">
+        <h2>Bem vindo de volta!</h2>
+        <br/>
+        <form class="needs-validation" id="loginForm" novalidate>
+            <div id="liveAlertPlaceholder" class="mb-3"></div>
+            <div class="mb-3">
+                <label for="email" class="form-label">Email</label>
+                <input type="email" class="form-control input-c" id="email" placeholder="Entre com o seu email" required>
+                <div class="invalid-feedback" id="invalid-feedback-email">
+                    Por favor, insira seu email.
+                </div>
+              </div>
+              <div class="mb-3">
+                <label for="password" class="form-label">Senha</label>
+                <input type="password" class="form-control input-c" id="password" placeholder="Entre com a senha senha" required>
+                <div class="invalid-feedback" id="invalid-feedback-password">
+                    Por favor, insira sua senha.
+                </div>
+              </div>
+              <div class="container-form-button">
+                <button class="btn btn-form">Entrar</button>
+              </div>
+              <div>
+                <p>Caso não tenha cadastro clique no botão abaixo para se cadastrar.</p>
+                <a href="{% url 'cadastrar_conta' %}" class="btn btn-orange">Cadastre-se</a>
+              </div>
+        </form>
+    </div>
+</main>
+<script type="module" src="{% static 'js/login.js' %}"></script>
+{%endblock%}

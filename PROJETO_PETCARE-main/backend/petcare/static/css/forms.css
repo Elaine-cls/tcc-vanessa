@@ -1,0 +1,21 @@
+@import "main.css";
+.input-c {
+    background-color: #EEEEEE;
+    border-radius: 0;
+    padding: 15px 10px;
+}
+.btn-form{
+    background-color: var(--bg-button);
+    color: white;
+    border-radius: 0;
+    padding: 15px 10px;
+    width: 100%;
+}
+.btn-form:hover{
+    background-color: var(--bg-button-hover);
+    color: white;
+}
+.container-form-button {
+    margin-top: 50px;
+    margin-bottom: 50px;
+}

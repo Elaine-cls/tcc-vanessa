@@ -1,0 +1,54 @@
+{%extends 'layouts/base.html'%}
+
+{%block title %}
+PetCare - Sou Clinica
+{%endblock%}
+
+{%block styles%}
+{% load static %}
+<link rel="stylesheet" href="{% static 'css/souclinica.css' %}">
+{%endblock%}
+
+{%block content%}
+<main>
+    <header>
+        <nav class="navbar navbar-expand-lg bg-orange">
+            <div class="container d-flex justify-content-between">
+              <a class="navbar-brand  text-white" href="#">PetCare</a>
+              <div class="d-flex justify-content-between gap-2">
+                <a class="btn btn-light" aria-current="page" href="{% url 'bem_vindo' %}">Voltar</a>
+                <a class="btn btn-entrar" aria-current="page" href="{% url 'loginvet' %}">Entrar</a>
+              </div>
+            </div>
+          </nav>
+    </header>
+    <div class="jumbotron">
+        <div class="container">
+          <h1 class="display-3">Seja parte da PetCare</h1>
+          <p>Cadastre sua clinca e tenha mais visibilidade para os clientes e um acesso mais fácil para as informações dos pets.</p>
+          <p><a class="btn btn-orange btn-lg" href="{% url 'cadastrarclinica' %}" role="button">Cadastrar clinica »</a></p>
+        </div>
+    </div>
+    <div class="container" style="margin-top:5rem;">
+        <!-- Example row of columns -->
+        <div class="row">
+          <div class="col-md-4">
+            <h2>Heading</h2>
+            <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. </p>
+            <p><a class="btn btn-secondary" href="#" role="button">View details »</a></p>
+          </div>
+          <div class="col-md-4">
+            <h2>Heading</h2>
+            <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. </p>
+            <p><a class="btn btn-secondary" href="#" role="button">View details »</a></p>
+          </div>
+          <div class="col-md-4">
+            <h2>Heading</h2>
+            <p>Donec sed odio dui. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Vestibulum id ligula porta felis euismod semper. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus.</p>
+            <p><a class="btn btn-secondary" href="#" role="button">View details »</a></p>
+          </div>
+        </div>
+        <hr>
+      </div>
+</main>
+{%endblock%}

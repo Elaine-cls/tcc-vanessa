@@ -1,0 +1,46 @@
+{%extends 'layouts/base.html'%}
+
+{%block title %}
+PetCare - Login Veterinario
+{%endblock%}
+
+{%block styles%}
+{% load static %}
+<link rel="stylesheet" href="{% static 'css/login-vet.css' %}">
+{%endblock%}
+
+{%block content%}
+<main>
+    <div class="container">
+        <div class="row">
+          <div class="col-sm-9 col-md-7 col-lg-5 mx-auto">
+            <div class="card border-0 shadow rounded-3 my-5">
+              <div class="card-body p-4 p-sm-5">
+                <h5 class="card-title text-center mb-5 fw-light fs-5">Veterinario(a)</h5>
+                <form id="loginForm">
+                  <div class="form-floating mb-3">
+                    <input type="email" class="form-control input-c" id="email" placeholder="name@example.com" required>
+                    <label for="email">Email address</label>
+                    <div class="invalid-feedback" id="invalid-feedback-email">
+                        Por favor, insira seu email.
+                    </div>
+                  </div>
+                  <div class="form-floating mb-3">
+                    <input type="password" class="form-control input-c" id="password" placeholder="Password" required>
+                    <label for="password">Password</label>
+                    <div class="invalid-feedback" id="invalid-feedback-password">
+                        Por favor, insira sua senha.
+                    </div>
+                  </div>
+                  <div class="d-grid">
+                    <button class="btn btn-orange btn-login text-uppercase fw-bold" type="submit">Entrar</button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+</main>
+<script type="module" src="{% static 'js/login-vet.js' %}"></script>
+{%endblock%}

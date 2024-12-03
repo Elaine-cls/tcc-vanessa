@@ -1,0 +1,16 @@
+[
+    {
+        "model": "petcare.MedicineType",
+        "pk": 1,
+        "fields": {
+            "type": "Vacinas"
+        }
+    },
+    {
+        "model": "petcare.MedicineType",
+        "pk": 2,
+        "fields": {
+            "type": "Vermífugos"
+        }
+    }
+]

@@ -1,0 +1,1 @@
+from .clinic_notauthenticated_viewset import ClinicNotAuthenticatedViewSet

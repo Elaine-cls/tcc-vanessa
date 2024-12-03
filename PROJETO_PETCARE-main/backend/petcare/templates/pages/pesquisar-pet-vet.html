@@ -1,0 +1,214 @@
+{%extends 'layouts/base.html'%}
+
+{%block title %}
+PetCare - Pesquisar por um Pet
+{%endblock%}
+
+{%block styles%}
+{% load static %}
+<link rel="stylesheet" href="{% static 'css/pesquisar-pet.css' %}">
+{%endblock%}
+
+{%block content%}
+<main>
+    <header>
+        <div class="px-3 py-2 text-white bg-orange">
+          <div class="container">
+            <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
+              <a href="/" class="d-flex align-items-center my-2 my-lg-0 me-lg-auto text-white text-decoration-none">
+                <u>PetCare</u>
+              </a>
+              <ul class="nav col-12 col-lg-auto my-2 justify-content-center my-md-0 text-small">
+                <li>
+                  <a href="{% url 'inicio' %}" class="nav-link text-danger-emphasis">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-house d-block mx-auto mb-1" viewBox="0 0 16 16">
+                        <path d="M8.707 1.5a1 1 0 0 0-1.414 0L.646 8.146a.5.5 0 0 0 .708.708L2 8.207V13.5A1.5 1.5 0 0 0 3.5 15h9a1.5 1.5 0 0 0 1.5-1.5V8.207l.646.647a.5.5 0 0 0 .708-.708L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293zM13 7.207V13.5a.5.5 0 0 1-.5.5h-9a.5.5 0 0 1-.5-.5V7.207l5-5z"/>
+                    </svg>
+                    Inicio
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <div class="px-3 py-2 border-bottom mb-3">
+          <div class="container d-flex flex-wrap justify-content-end">
+            <div class="text-end">
+              <button type="button" class="btn btn-danger" id="logout">Sair da minha conta</button>
+            </div>
+          </div>
+        </div>
+    </header>
+    <div class="container">
+       <div class="card shadow border-0 p-3">
+            <div class="card-header">
+                <h3>Pesquise um pet usando o código unico.</h3>
+            </div>
+            <div class="card-body">
+                <br/>
+                <form id="formSearch" class="needs-validation" novalidate>
+                    <div>
+                        <input class="form-control me-2" id="codigo-input" type="text" placeholder="Insira o código" aria-label="Insira o código">
+                        <div class="invalid-feedback" id="invalid-feedback-codigo">
+                            Por favor, insira o código do pet.
+                        </div>
+                    </div>
+                    <br/>
+                    <button class="btn btn-outline-success"  type="submit">Buscar</button>
+                </form>
+                <br/>
+                <br/>
+                <div class="card p-3" id="hm-container">
+                    <div class="card-header">
+                        <div class="d-flex justify-content-center">
+                            <p>Nome: <span id="nome"></span></p>
+                        </div>
+                        <div class="d-flex justify-content-center">
+                            <p class="m-0">Código: <span id="codigo"></span></p>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div>
+                            <p>Raça: <strong id="raca"></strong></p>
+                            <p>Especie: <strong id="especie"></strong></p>
+                            <p>Idade: <strong id="idade"></strong></p>
+                            <p>Peso: <strong id="peso"></strong></p>
+                            <p>Genero: <strong id="genero"></strong></p>
+                            <p>Observações: <strong id="obs"></strong></p>
+                        </div>
+                        <br/>
+                        <div>
+                            <div class="d-lg-flex justify-content-between align-items-end mb-2">
+                                <h5><u>Medicamentos</u></h5>
+                                <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#medicamento-modal">
+                                    Adicionar um medicamento
+                                </button>
+                            </div>
+                            <div>
+                                <div class="card p-3">
+                                    <div class="card-body" id="list-medicamentos">
+                                        <div class="border-bottom">
+                                            <p>Nome: <strong id="nome-medicamento"></strong></p>
+                                            <p>Tipo: <strong id="tipo"></strong></p>
+                                            <p>Data da aplicação: <strong id="data-aplicacao"></strong></p>
+                                            <p>Data de reforço: <strong id="data-reforco"></strong></p>
+                                            <p>Detalhes: <strong id="detalhes"></strong></p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <br/>
+                        <div>
+                            <h5><u>Doenças documentadas</u></h5>
+                            <div>
+                                <div class="card p-3">
+                                    <div class="card-body" id="list-doencas">
+                                        <div class="border-bottom">
+                                            <p>Nome: <strong></strong></p>
+                                            <p>Status: <strong></strong></p>
+                                            <p>Sintomas: <strong></strong></p>
+                                            <p>Descrição: <strong></strong></p>
+                                            <p>Data do diagnostico: <strong></strong></p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <br/>
+                        <div>
+                            <h5><u>Cirurgias</u></h5>
+                            <div>
+                                <div class="card p-3" id="list-cirurgias">
+                                    <div class="card-body">
+                                        <div class="border-bottom">
+                                            <p>Nome: <strong></strong></p>
+                                            <p>Status: <strong></strong></p>
+                                            <p>Detalhes: <strong></strong></p>
+                                            <p>Data: <strong></strong></p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <br/>
+                        <div>
+                            <h5><u>Consultas</u></h5>
+                            <div>
+                                <div class="card p-3" id="list-consultas">
+                                    <div class="card-body">
+                                        <div class="border-bottom">
+                                            <p>Razão: <strong></strong></p>
+                                            <p>Clinica: <strong></strong></p>
+                                            <p>Data: <strong></strong></p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+       </div>
+    </div>
+    <div class="modal fade" id="medicamento-modal" tabindex="-1" aria-labelledby="medicamento-modal" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h1 class="modal-title fs-5" id="medicamento-modal-title">Cadastrar um medicamento</h1>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <form class="needs-validation" id="form-medicamento" novalidate>
+                <div class="mb-4">
+                    <div id="placeholder-medicamento"></div>
+                  </div>
+                <div class="mb-4">
+                    <label for="nome-medicamento-input" class="form-label">Nome</label>
+                    <input type="text" class="form-control" id="nome-medicamento-input" required>
+                    <div class="invalid-feedback" id="invalid-feedback-nome-medicamento">
+                        Por favor, insira o nome do medicamento.
+                    </div>
+                </div>
+                <div class="mb-4">
+                    <label for="data-aplicacao-medicamento" class="form-label">Data da aplicação</label>
+                    <input type="date" class="form-control" id="data-aplicacao-medicamento" required>
+                    <div class="invalid-feedback" id="invalid-feedback-data-aplicacao-medicamento">
+                        Por favor, informe a data de aplicação.
+                    </div>
+                </div>
+                <div class="mb-4">
+                    <label for="data-reforco-medicamento" class="form-label">Data de reforço</label>
+                    <input type="date" class="form-control" id="data-reforco-medicamento" required>
+                    <div class="invalid-feedback" id="invalid-feedback-data-reforco-medicamento">
+                        Por favor, informe a data de reforço.
+                    </div>
+                </div>
+                <div class="mb-4">
+                    <label for="tipo-medicamento" class="form-label">Tipo do medicamento</label>
+                    <select class="form-select" aria-label="Tipo do medicamento" id="tipo-medicamento" required>
+                        <option selected hidden value="">Escolha</option>
+                        <option value="1">Vacina</option>
+                        <option value="2">Vermífugo</option>
+                      </select>
+                    <div class="invalid-feedback" id="invalid-feedback-tipo-medicamento">
+                        Por favor, informe o tipo do medicamento.
+                    </div>
+                </div>
+                <div class="mb-4 form-floating">
+                    <textarea class="form-control" placeholder="Leave a comment here" id="detalhes-medicamento" style="height: 100px"></textarea>
+                    <label for="detalhes-medicamento">Detalhes</label>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                    <button type="submit" class="btn btn-orange">Adicionar</button>
+                  </div>
+              </form>
+            </div>
+          </div>
+        </div>
+    </div>
+</main>
+<script type="module" src="{% static 'js/scripts/logout-script.js' %}" data-button-id="logout"></script>
+<script type="module" src="{% static 'js/pesquisar-pet.js' %}"></script>
+{%endblock%}

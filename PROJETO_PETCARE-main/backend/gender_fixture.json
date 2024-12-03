@@ -1,0 +1,16 @@
+[
+    {
+        "model": "petcare.Gender",
+        "pk": "1",
+        "fields": {
+            "description": "Macho"
+        }
+    },
+    {
+        "model": "petcare.Gender",
+        "pk": "2",
+        "fields": {
+            "description": "Femea"
+        }
+    }
+]

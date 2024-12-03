@@ -1,0 +1,8 @@
+dentro da pasta backend -> pip install -r libs.txt
+cria as tabelas -> python manage.py migrate sqlite
+
+#Criar os objetos
+python manage.py loaddata surgery_fixture.json
+python manage.py loaddata gender_fixture.json
+python manage.py loaddata medicine_type_fixture.json
+python manage.py loaddata illness_status_fixture.json

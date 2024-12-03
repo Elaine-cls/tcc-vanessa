@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: pet-care-app-svc
+  namespace: pet-care-app
+  annotations:
+    service.beta.kubernetes.io/aws-load-balancer-type: nlb
+    service.beta.kubernetes.io/aws-load-balancer-scheme: internet-facing  # Tornando o NLB acessível pela internet
+spec:
+  selector:
+    app: pet-care-app
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8000 # Porta exposta no container
+  type: LoadBalancer

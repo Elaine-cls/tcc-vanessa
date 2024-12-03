@@ -1,0 +1,3 @@
+from .cadastrar_conta import CadastrarContaView
+from .cadastrar_info import CadastrarInfoView
+from .cadastrado_com_sucesso import CadastradoComSucessoView

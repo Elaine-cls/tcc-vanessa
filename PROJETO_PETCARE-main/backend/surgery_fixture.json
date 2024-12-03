@@ -1,0 +1,30 @@
+[
+    {
+        "model": "petcare.SurgeryStatus",
+        "pk": 1,
+        "fields": {
+            "status": "Pendente"
+        }
+    },
+    {
+        "model": "petcare.SurgeryStatus",
+        "pk": 2,
+        "fields": {
+            "status": "Realizada"
+        }
+    },
+    {
+        "model": "petcare.SurgeryStatus",
+        "pk": 3,
+        "fields": {
+            "status": "Cancelada"
+        }
+    },
+    {
+        "model": "petcare.SurgeryStatus",
+        "pk": 4,
+        "fields": {
+            "status": "Em Recuperação"
+        }
+    }
+]

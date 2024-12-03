@@ -1,0 +1,101 @@
+{%extends 'layouts/base.html'%}
+
+{%block title %}
+PetCare - Bem Vindo
+{%endblock%}
+
+{%block styles%}
+{% load static %}
+<link rel="stylesheet" href="{% static 'css/bem-vindo.css' %}">
+{%endblock%}
+
+{%block content%}
+<header class="navbar navbar-expand-lg navbar-light bg_orange_custom">
+    <div class="container">
+        <a class="navbar-brand text-light" href="#">PetCare</a>
+        <a class="navbar-brand btn-entrar btn" href="{% url 'login' %}">Entrar</a>
+    </div>
+</header>
+
+<main>
+    <section class="hero">
+        <h2 class="mb-5">Bem-vindo a Pet Care</h2>
+        <img src="{% static 'imgs/logo.png' %}" alt="Dog Icon" class="img-fluid">
+    </section>
+    <section class="start">
+        <div class="container">
+        <a class="btn btn-default" href="{% url 'cadastrar_conta'%}">Vamos começar</a>
+        </div>
+    </section>
+
+    <section class="about">
+        <div class="container">
+        <h2 class="section-title">Sobre nós</h2>
+        <p>No PetCare, nossa missão é facilitar o cuidado com os seus animais de estimação. Oferecemos uma plataforma intuitiva e segura, onde donos de pets podem registrar e acompanhar todas as informações importantes sobre seus companheiros, desde vacinas até consultas veterinárias. Além disso, veterinários podem colaborar diretamente, adicionando e atualizando dados relevantes para garantir a saúde e o bem-estar dos pets.
+        <br/><br/>Com o PetCare, você tem tudo o que precisa em um só lugar para cuidar de quem tanto ama. ❤️</p>
+        </div>
+    </section>
+
+    <section class="services">
+        <div class="container">
+        <h2 class="section-title">Nossos serviços</h2>
+        <div class="row gap-5">
+            <div class="col">
+            <div class="card">
+                <div class="card-body">
+                <h5 class="card-title">Cadastro de Pets</h5>
+                <p class="card-text">Registre todas as informações do seu pet, incluindo nome, idade, raça, e peso, em um sistema personalizado e fácil de usar.</p>
+                </div>
+            </div>
+            </div>
+            <div class="col">
+            <div class="card">
+                <div class="card-body">
+                <h5 class="card-title">Acompanhamento de Saúde</h5>
+                <p class="card-text">Acesse o histórico completo do seu pet, com informações detalhadas sobre vacinas, consultas, cirurgias e medicamentos, tudo em um só lugar.</p>
+                </div>
+            </div>
+            </div>
+            <div class="col">
+            <div class="card">
+                <div class="card-body">
+                <h5 class="card-title">Gestão Multiplataforma</h5>
+                <p class="card-text">Acompanhe o bem-estar dos seus pets onde estiver, com uma interface acessível para dispositivos móveis e desktop.</p>
+                </div>
+            </div>
+            </div>
+        </div>
+        </div>
+    </section>
+
+    <section class="cta container">
+        <h2 class="section-title">Seja Parte do PetCare</h2>
+        <p>Cadastre sua clínica ou atue como veterinário em nossa plataforma e conecte-se com donos de pets que precisam dos seus serviços. Com o PetCare, você amplia sua visibilidade, atrai novos clientes e fortalece sua reputação ao oferecer um cuidado mais próximo e personalizado.
+        Se deseja fazer parte do nosso sistema, clique no botão abaixo para cadastrar sua clínica ou perfil profissional.</p>
+        <a class="btn btn-default" href="{% url 'souclinica' %}">Entre</a>
+    </section>
+</main>
+
+<footer class="footer">
+<h2>PetCare</h2>
+<div class="footer-links row justify-content-center col row-cols-1">
+<div class="col">
+    <h4>Mídias sociais</h4>
+    <ul>
+    <li>Facebook</li>
+    <li>Twitter</li>
+    <li>LinkedIn</li>
+    <li>Instagram</li>
+    </ul>
+</div>
+<div class="col">
+    <h4>Integrações</h4>
+    <ul>
+    <li>Mirante</li>
+    </ul>
+</div>
+</div>
+<br/>
+<p>&copy; 2024 Jorge Calheiros.</p>
+</footer>
+{%endblock%}

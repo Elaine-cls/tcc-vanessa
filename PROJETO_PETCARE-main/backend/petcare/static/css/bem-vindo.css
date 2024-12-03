@@ -1,0 +1,76 @@
+/* General Reset */
+@import "main.css";  
+
+.btn-entrar{
+  color: #7C5A3B;
+  background-color: #F7D692;
+
+  padding-left: 20px;
+  padding-right: 20px;
+  font-size: 16px; 
+  font-weight: 600;
+  margin: 0 !important;
+}
+.btn-entrar:hover{
+  background-color: #f7cd7a;
+}
+.hero {
+  padding-top: 60px;
+  text-align: center;
+  background-color: #EAA170;
+  color: white;
+}
+
+.hero h2 {
+font-size: 2rem;
+margin-bottom: 1rem;
+}
+
+.hero img {
+max-width: 200px;
+}
+.start{
+  text-align: center;
+}
+.section-title {
+  color: var(--bg-button);
+  margin-bottom: 20px;
+}
+
+.about,
+.start,
+.services,
+.cta {
+  padding: 5rem 1rem;
+  margin-bottom: 3rem;
+}
+/* .about,
+.services {
+  border-bottom: 2px dashed var(--bg-primary);
+} */
+.services {
+  border-radius: 5px;
+}
+.services .card {
+  padding: 1rem;
+  border-radius: 8px;
+  border: 0 !important;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+.services .card p{
+  color: #3D3D3D;
+}
+  
+.footer {
+  background-color: var(--bg-primary);
+  color: white;
+  padding: 2rem 1rem;
+  text-align: center;
+}
+.footer h2{
+  margin-bottom: 1rem;
+}
+.footer ul {
+  list-style: none;
+  padding: 0;
+}
