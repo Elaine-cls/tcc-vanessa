@@ -14,7 +14,7 @@ pipeline {
             steps {
                 sh '''
                     aws eks update-kubeconfig --region $AWS_REGION --name $CLUSTER_NAME
-                    kubectl version --short
+                    kubectl version
                 '''
             }
         }
