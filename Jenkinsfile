@@ -3,11 +3,48 @@ pipeline {
     environment {
         AWS_REGION = 'us-east-2'
         CLUSTER_NAME = 'k8s-cluster-tcc'
+        ECR_REPO = 'pet-care-tcc-ads'
+        IMAGE_TAG = 'latest'
+        DOCKERFILE_PATH = 'PROJETO_PETCARE-main/Dockerfile'
+        AWS_ACCOUNT_ID = '863518437070'
     }
     stages {
         stage('Checkout Code') {
             steps {
                 checkout scm
+            }
+        }
+        stage('Build and Push Docker Image') {
+            steps {
+                script {
+                    def imageUri = "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${ECR_REPO}:${IMAGE_TAG}"
+                    
+                    sh '''
+                        # Login no Amazon ECR
+                        aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com
+
+                        # Build da imagem Docker
+                        docker build -t $ECR_REPO -f $DOCKERFILE_PATH .
+
+                        # Tag e push para o ECR
+                        docker tag $ECR_REPO:latest ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/$ECR_REPO:$IMAGE_TAG
+                        docker push ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/$ECR_REPO:$IMAGE_TAG
+                    '''
+                    env.IMAGE_URI = imageUri
+                }
+            }
+        }
+        stage('Update Kubernetes Deployment') {
+            steps {
+                script {
+                    def deploymentFile = '.kubernetes/deployment.yaml'
+                    def updatedFile = 'updated-deployment.yaml'
+
+                    // Substituir a imagem dinamicamente no arquivo de deployment
+                    sh """
+                        sed 's|image: .*|image: ${env.IMAGE_URI}|' $deploymentFile > $updatedFile
+                    """
+                }
             }
         }
         stage('Configure EKS Access') {
@@ -18,7 +55,16 @@ pipeline {
                 '''
             }
         }
-        stage('Deploy to EKS') {
+        stage('Deploy deployment to EKS') {
+            steps {
+                sh '''
+                    # Aplicar o arquivo de deployment atualizado
+                    kubectl apply -f updated-deployment.yaml
+                '''
+            }
+        }
+
+        stage('Deploy other Kubernetes resources to EKS') {
             steps {
                 script {
                     def kubernetesFiles = findFiles(glob: '.kubernetes/*.yaml')
