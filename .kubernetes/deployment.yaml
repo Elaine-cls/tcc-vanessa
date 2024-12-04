@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
       - name: pet-care-app
-        image: "${REGISTRY}:${IMAGE_TAG}"
+        image: "863518437070.dkr.ecr.us-east-2.amazonaws.com/pet-care-tcc-ads:latest"
         ports:
         - containerPort: 8000
         env:
