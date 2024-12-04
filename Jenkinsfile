@@ -30,7 +30,6 @@ pipeline {
                         docker push ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/$ECR_REPO:$IMAGE_TAG
                     '''
                     env.IMAGE_URI = imageUri
-
                 }
             }
         }
@@ -75,7 +74,8 @@ pipeline {
         stage('Deploy other Kubernetes resources to EKS') {
             steps {
                 script {
-                    def kubernetesFiles = findFiles(glob: '.kubernetes/*.yaml')
+                    def kubernetesFiles = findFiles(glob: '.kubernetes/*.yaml').findAll { !it.path.contains('updated-deployment.yaml') }
+                    
                     for (file in kubernetesFiles) {
                         sh "kubectl apply -f ${file.path}"
                     }

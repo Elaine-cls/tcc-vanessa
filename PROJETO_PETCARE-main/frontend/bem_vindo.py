@@ -4,7 +4,7 @@ from partials.todos import obter_btn_style, obter_prev_button
 
 def main(page: ft.Page):
     # Configurações iniciais da página
-    page.title = "Bem Vindo Elaine!"
+    page.title = "Bem Vindo Vanessa!"
     page.horizontal_alignment = ft.CrossAxisAlignment.CENTER
     page.vertical_alignment = ft.MainAxisAlignment.CENTER
     page.bgcolor = "#1B003A"  # Fundo escuro para destacar o neon
@@ -26,7 +26,7 @@ def main(page: ft.Page):
 
     # Título "PET CARE" com estilo neon
     title = ft.Text(
-        "PET CARE",
+        "PET CARE Vanessa",
         size=40,
         weight=ft.FontWeight.BOLD,
         color="#DDA0DD",  # Roxo neon claro
