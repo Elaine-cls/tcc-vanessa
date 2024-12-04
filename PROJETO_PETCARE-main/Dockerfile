@@ -3,7 +3,7 @@ FROM python:3.10-slim
 # Diretório dentro do container
 WORKDIR /app 
 
-COPY requirements.txt /app/
+COPY ./requirements.txt /app/
 
 # Instalando as dependências
 RUN pip install --no-cache-dir -r requirements.txt
