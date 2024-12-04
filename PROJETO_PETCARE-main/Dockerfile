@@ -3,14 +3,10 @@ FROM python:3.10-slim
 # Diretório dentro do container
 WORKDIR /app 
 
-# Instalando as dependências diretamente com o pip
-RUN pip install --no-cache-dir \
-    djangorestframework \
-    drf-yasg \
-    python-decouple \
-    setuptools \
-    Pillow \
-    requests
+COPY ./requirements.txt /app/
+
+# Instalando as dependências
+RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . /app/
 
