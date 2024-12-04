@@ -21,7 +21,7 @@ pipeline {
         stage('Deploy to EKS') {
             steps {
                 script {
-                    def kubernetesFiles = findFiles(glob: '.kubernetes/*.yml')
+                    def kubernetesFiles = findFiles(glob: '.kubernetes/*.yaml')
                     for (file in kubernetesFiles) {
                         sh "kubectl apply -f ${file.path}"
                     }
