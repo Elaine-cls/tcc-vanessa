@@ -33,26 +33,6 @@ pipeline {
                 }
             }
         }
-        stage('Update Kubernetes Deployment') {
-            steps {
-                script {
-                    def deploymentFile = '.kubernetes/deployment.yaml'
-                    def updatedFile = 'updated-deployment.yaml'
-
-                    // Verifique o valor da variável IMAGE_URI
-                    echo "IMAGE_URI: ${env.IMAGE_URI}"
-
-                    // Substituir a imagem dinamicamente no arquivo de deployment
-                    sh """
-                        # Verifique se o comando sed está funcionando corretamente
-                        sed 's|IMAGE_PLACEHOLDER|${env.IMAGE_URI}|' $deploymentFile > $updatedFile
-
-                        # Exibir o conteúdo do arquivo atualizado para verificar a substituição
-                        cat $updatedFile
-                    """
-                }
-            }
-        }
 
         stage('Configure EKS Access') {
             steps {
