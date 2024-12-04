@@ -5,7 +5,6 @@ pipeline {
         CLUSTER_NAME = 'k8s-cluster-tcc'
         ECR_REPO = 'pet-care-tcc-ads'
         IMAGE_TAG = 'latest'
-        DOCKERFILE_PATH = 'PROJETO_PETCARE-main/Dockerfile'
         AWS_ACCOUNT_ID = '863518437070'
     }
     stages {
@@ -24,13 +23,14 @@ pipeline {
                         aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com
 
                         # Build da imagem Docker
-                        docker build -t $ECR_REPO -f $DOCKERFILE_PATH .
+                        docker build -t $ECR_REPO .
 
                         # Tag e push para o ECR
                         docker tag $ECR_REPO:latest ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/$ECR_REPO:$IMAGE_TAG
                         docker push ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/$ECR_REPO:$IMAGE_TAG
                     '''
                     env.IMAGE_URI = imageUri
+
                 }
             }
         }
