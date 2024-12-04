@@ -6,3 +6,5 @@ python manage.py loaddata surgery_fixture.json
 python manage.py loaddata gender_fixture.json
 python manage.py loaddata medicine_type_fixture.json
 python manage.py loaddata illness_status_fixture.json
+
+#teste
