@@ -42,19 +42,12 @@ pipeline {
                 '''
             }
         }
-        stage('Deploy deployment to EKS') {
-            steps {
-                sh '''
-                    # Aplicar o arquivo de deployment atualizado
-                    kubectl apply -f updated-deployment.yaml
-                '''
-            }
-        }
+
 
         stage('Deploy other Kubernetes resources to EKS') {
             steps {
                 script {
-                    def kubernetesFiles = findFiles(glob: '.kubernetes/*.yaml').findAll { !it.path.contains('updated-deployment.yaml') }
+                    def kubernetesFiles = findFiles(glob: '.kubernetes/*.yaml').findAll
                     
                     for (file in kubernetesFiles) {
                         sh "kubectl apply -f ${file.path}"
