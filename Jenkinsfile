@@ -41,10 +41,12 @@ pipeline {
                         sh 'kubectl version --short'
                         
                         // Deploy de recursos Kubernetes
-                        def kubernetesFiles = findFiles(glob: '.kubernetes/*.yaml')
-                        for (file in kubernetesFiles) {
-                            sh "kubectl apply -f ${file.path}"
-                        }
+                        sh '''
+                            kubernetesFiles=$(find .kubernetes -name "*.yaml")
+                            for file in $kubernetesFiles; do
+                                kubectl apply -f $file
+                            done
+                        '''
                     }
                 }
             }
