@@ -16,15 +16,15 @@ pipeline {
         stage('Build and Push Docker Image') {
             steps {
                 // Use credenciais se necessário
-            withAWS(credentials: 'aws-credentials', region: 'us-east-2', role: 'arn:aws:iam::863518437070:role/oidcsva') {
+                withAWS(credentials: 'aws-credentials', region: 'us-east-2', role: 'arn:aws:iam::863518437070:role/oidcsva') {
                     sh '''
                         # Login no Amazon ECR
                         aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com
-                        # Build da imagem Docker
-                        docker build -t $ECR_REPO .
+                        # Build da imagem Docker (usando sudo para evitar problemas de permissão)
+                        sudo docker build -t $ECR_REPO .
                         # Tag e push para o ECR
-                        docker tag $ECR_REPO:latest ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/$ECR_REPO:$IMAGE_TAG
-                        docker push ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/$ECR_REPO:$IMAGE_TAG
+                        sudo docker tag $ECR_REPO:latest ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/$ECR_REPO:$IMAGE_TAG
+                        sudo docker push ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/$ECR_REPO:$IMAGE_TAG
                     '''
                 }
             }
@@ -38,7 +38,6 @@ pipeline {
             }
         }
 
-
         stage('Deploy other Kubernetes resources to EKS') {
             steps {
                 script {
@@ -50,7 +49,6 @@ pipeline {
                 }
             }
         }
-
     }
     post {
         success {
