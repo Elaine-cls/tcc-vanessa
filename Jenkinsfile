@@ -1,5 +1,20 @@
 pipeline {
-    agent any
+    agent {
+        docker {
+            image 'amazon/aws-cli:latest'
+            label 'my-eks-node'
+        }
+    }
+    stages {
+        stage('Build and Push Docker Image') {
+            steps {
+                script {
+                    sh 'aws ecr get-login-password --region us-east-2 | docker login --username AWS --password-stdin 863518437070.dkr.ecr.us-east-2.amazonaws.com'
+                    // Adicione o código para construir e enviar a imagem Docker
+                }
+            }
+        }
+    }
     environment {
         AWS_REGION = 'us-east-2'
         CLUSTER_NAME = 'k8s-cluster-tcc'
