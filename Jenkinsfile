@@ -6,8 +6,6 @@ pipeline {
         ECR_REPO = 'pet-care-tcc-ads'
         IMAGE_TAG = 'latest'
         AWS_ACCOUNT_ID = '863518437070'
-        AWS_ACCESS_KEY_ID = 'UExZMERwK1RFRS9PTjVCcEJ4RWlwZnp2ZHl6UDFwdVJIQWdJWmEwaA=='
-        AWS_SECRET_ACCESS_KEY = 'QUtJQTRTRE5WVjNIQjVFSkNJWk8='
     }
     stages {
         stage('Checkout Code') {
@@ -18,10 +16,10 @@ pipeline {
         stage('Build and Push Docker Image') {
             steps {
                 // Use credenciais se necessário
-                withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', 
-                                  credentialsId: 'aws-credentials',
-                                  accessKeyVariable: '$AWS_ACCESS_KEY_ID', 
-                                  secretKeyVariable: '$AWS_SECRET_ACCESS_KEY']]) {
+                withCredentials([usernamePassword(credentialsId: 'aws-credentials', 
+                                  usernameVariable: 'AWS_ACCESS_KEY_ID', 
+                                  passwordVariable: 'AWS_SECRET_ACCESS_KEY')])
+                {
                     sh '''
                         # Login no Amazon ECR
                         aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com
