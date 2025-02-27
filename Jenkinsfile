@@ -1,4 +1,8 @@
 pipeline {
+    agent {
+        label 'my-eks-node'
+    }
+    
     environment {
         AWS_REGION = 'us-east-2'
         CLUSTER_NAME = 'k8s-cluster-tcc'
@@ -6,21 +10,15 @@ pipeline {
         IMAGE_TAG = 'latest'
         AWS_ACCOUNT_ID = '863518437070'
     }
-
+    
     stages {
         stage('Checkout Code') {
             steps {
-                checkout scm // Faz o checkout do código do Git
+                checkout scm
             }
         }
-
+        
         stage('Build and Push Docker Image') {
-            agent {
-                docker {
-                    image 'amazon/aws-cli:latest' // Usa a imagem Docker específica para a etapa de build
-                    label 'my-eks-node' // Se você tiver um nó específico com o label 'my-eks-node'
-                }
-            }
             steps {
                 script {
                     def imageUri = "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${ECR_REPO}:${IMAGE_TAG}"
@@ -62,7 +60,7 @@ pipeline {
             }
         }
     }
-
+    
     post {
         success {
             echo 'Deployment successful!'
