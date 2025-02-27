@@ -43,7 +43,7 @@ def main(page: ft.Page):
 
     # Subtítulo "BEM-VINDO!" com efeito neon
     subtitle = ft.Text(
-        "BEM-VINDO!".upper(),
+        "BEM-VINDO VANESSA!".upper(),
         size=20,
         color="#BB86FC",  # Lilás neon para contraste
         text_align=ft.TextAlign.CENTER,
