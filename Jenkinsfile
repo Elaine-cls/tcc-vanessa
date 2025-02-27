@@ -1,20 +1,6 @@
 pipeline {
-    agent {
-        docker {
-            image 'amazon/aws-cli:latest'
-            label 'my-eks-node'
-        }
-    }
-    stages {
-        stage('Build and Push Docker Image') {
-            steps {
-                script {
-                    sh 'aws ecr get-login-password --region us-east-2 | docker login --username AWS --password-stdin 863518437070.dkr.ecr.us-east-2.amazonaws.com'
-                    // Adicione o código para construir e enviar a imagem Docker
-                }
-            }
-        }
-    }
+    agent any // Usa o agente padrão do Jenkins, o que pode ser qualquer nó do Jenkins
+
     environment {
         AWS_REGION = 'us-east-2'
         CLUSTER_NAME = 'k8s-cluster-tcc'
@@ -22,13 +8,21 @@ pipeline {
         IMAGE_TAG = 'latest'
         AWS_ACCOUNT_ID = '863518437070'
     }
+
     stages {
         stage('Checkout Code') {
             steps {
-                checkout scm
+                checkout scm // Faz o checkout do código do Git
             }
         }
+
         stage('Build and Push Docker Image') {
+            agent {
+                docker {
+                    image 'amazon/aws-cli:latest' // Usa a imagem Docker específica para a etapa de build
+                    label 'my-eks-node' // Se você tiver um nó específico com o label 'my-eks-node'
+                }
+            }
             steps {
                 script {
                     def imageUri = "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${ECR_REPO}:${IMAGE_TAG}"
@@ -58,7 +52,6 @@ pipeline {
             }
         }
 
-
         stage('Deploy other Kubernetes resources to EKS') {
             steps {
                 script {
@@ -70,8 +63,8 @@ pipeline {
                 }
             }
         }
-
     }
+
     post {
         success {
             echo 'Deployment successful!'
