@@ -15,16 +15,23 @@ pipeline {
         }
         stage('Build and Push Docker Image') {
             steps {
-                container('kaniko') {
+                // Use credenciais se necessário
+                withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', 
+                                  credentialsId: 'aws-credentials',
+                                  accessKeyVariable: 'AWS_ACCESS_KEY_ID', 
+                                  secretKeyVariable: 'AWS_SECRET_ACCESS_KEY']]) {
                     sh '''
-                        /kaniko/executor --context `pwd` \
-                        --destination=${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${ECR_REPO}:${IMAGE_TAG} \
-                        --dockerfile=Dockerfile
+                        # Login no Amazon ECR
+                        aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com
+                        # Build da imagem Docker
+                        docker build -t $ECR_REPO .
+                        # Tag e push para o ECR
+                        docker tag $ECR_REPO:latest ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/$ECR_REPO:$IMAGE_TAG
+                        docker push ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/$ECR_REPO:$IMAGE_TAG
                     '''
                 }
             }
         }
-
         stage('Configure EKS Access') {
             steps {
                 sh '''
