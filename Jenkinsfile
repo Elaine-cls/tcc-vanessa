@@ -1,6 +1,4 @@
 pipeline {
-    agent any // Usa o agente padrão do Jenkins, o que pode ser qualquer nó do Jenkins
-
     environment {
         AWS_REGION = 'us-east-2'
         CLUSTER_NAME = 'k8s-cluster-tcc'
