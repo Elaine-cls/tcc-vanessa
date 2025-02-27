@@ -7,6 +7,7 @@ pipeline {
         ECR_REPO = 'pet-care-tcc-ads'
         IMAGE_TAG = 'latest'
         AWS_ACCOUNT_ID = '863518437070'
+        HOME = '/var/jenkins_home'
         PATH = "/var/jenkins_home/bin:${env.PATH}"
     }
     
@@ -17,29 +18,40 @@ pipeline {
             }
         }
         
-        stage('Install Dependencies') {
+        stage('Setup Tools Directory') {
             steps {
                 sh '''
-                    # Instalar pacotes necessários
-                    apt-get update -y
-                    apt-get install -y curl unzip apt-transport-https ca-certificates software-properties-common
+                    # Criar diretórios para ferramentas
+                    mkdir -p /var/jenkins_home/bin
+                    mkdir -p /var/jenkins_home/tools
+                    mkdir -p /var/jenkins_home/.kube
                 '''
             }
         }
         
-        stage('Install Docker') {
+        stage('Install Docker CLI') {
             steps {
                 sh '''
-                    # Instalar Docker
-                    curl -fsSL https://get.docker.com -o get-docker.sh
-                    sh get-docker.sh
+                    # Verificar se o Docker já está disponível
+                    if command -v docker &> /dev/null; then
+                        echo "Docker já está instalado"
+                        docker --version
+                    else
+                        echo "Baixando o Docker CLI estático (sem necessidade de instalação)"
+                        cd /var/jenkins_home/tools
+                        
+                        # Baixar binário estático do Docker
+                        curl -L https://download.docker.com/linux/static/stable/x86_64/docker-20.10.9.tgz -o docker.tgz
+                        tar -xzf docker.tgz
+                        cp docker/docker /var/jenkins_home/bin/
+                        rm -rf docker.tgz docker
+                        
+                        # Verificar a instalação
+                        docker --version || echo "Instalação do Docker falhou. Talvez o socket precise ser montado."
+                    fi
                     
-                    # Verificar instalação do Docker
-                    docker --version
-                    
-                    # Garantir que o jenkins possa usar o docker
-                    usermod -aG docker jenkins || true
-                    chmod 666 /var/run/docker.sock || true
+                    # Verificar acesso ao socket do Docker
+                    ls -la /var/run/docker.sock || echo "Socket do Docker não encontrado ou sem permissão de acesso"
                 '''
             }
         }
@@ -47,16 +59,21 @@ pipeline {
         stage('Install AWS CLI') {
             steps {
                 sh '''
-                    # Criar diretório bin se não existir
-                    mkdir -p /var/jenkins_home/bin
-                    
-                    # Baixar e instalar AWS CLI
-                    curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
-                    unzip -o awscliv2.zip
-                    ./aws/install -i /var/jenkins_home/aws-cli -b /var/jenkins_home/bin
-                    
-                    # Verificar instalação
-                    aws --version
+                    # Verificar se AWS CLI já está instalado
+                    if command -v aws &> /dev/null; then
+                        echo "AWS CLI já está instalado"
+                        aws --version
+                    else
+                        echo "Instalando AWS CLI"
+                        cd /var/jenkins_home/tools
+                        curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+                        unzip -o awscliv2.zip
+                        ./aws/install -i /var/jenkins_home/aws-cli -b /var/jenkins_home/bin
+                        rm -rf awscliv2.zip
+                        
+                        # Verificar instalação
+                        aws --version
+                    fi
                 '''
             }
         }
@@ -64,15 +81,47 @@ pipeline {
         stage('Install kubectl') {
             steps {
                 sh '''
-                    # Baixar e instalar kubectl
-                    curl -LO "https://dl.k8s.io/release/stable.txt"
-                    KUBECTL_VERSION=$(cat stable.txt)
-                    curl -LO "https://dl.k8s.io/release/${KUBECTL_VERSION}/bin/linux/amd64/kubectl"
-                    chmod +x kubectl
-                    mv kubectl /var/jenkins_home/bin/
+                    # Verificar se kubectl já está instalado
+                    if command -v kubectl &> /dev/null; then
+                        echo "kubectl já está instalado"
+                        kubectl version --client
+                    else
+                        echo "Instalando kubectl"
+                        cd /var/jenkins_home/tools
+                        curl -LO "https://dl.k8s.io/release/stable.txt"
+                        KUBECTL_VERSION=$(cat stable.txt)
+                        curl -LO "https://dl.k8s.io/release/${KUBECTL_VERSION}/bin/linux/amd64/kubectl"
+                        chmod +x kubectl
+                        mv kubectl /var/jenkins_home/bin/
+                        rm -f stable.txt
+                        
+                        # Verificar instalação
+                        kubectl version --client
+                    fi
+                '''
+            }
+        }
+        
+        stage('Verify Docker Socket') {
+            steps {
+                sh '''
+                    # Verificar se o socket do Docker está acessível
+                    if [ ! -e /var/run/docker.sock ]; then
+                        echo "ERRO: Socket do Docker não encontrado em /var/run/docker.sock"
+                        echo "Por favor, monte o socket do Docker no contêiner Jenkins usando:"
+                        echo "  - Para Docker: -v /var/run/docker.sock:/var/run/docker.sock"
+                        echo "  - Para Kubernetes/EKS: adicione um volume hostPath para o socket"
+                        exit 1
+                    fi
                     
-                    # Verificar instalação
-                    kubectl version --client
+                    if [ ! -r /var/run/docker.sock ]; then
+                        echo "ERRO: Sem permissão para ler o socket do Docker"
+                        echo "Tente executar: 'chmod 666 /var/run/docker.sock' no host"
+                        exit 1
+                    fi
+                    
+                    echo "Socket do Docker está acessível"
+                    docker info || echo "Docker não está respondendo. Verifique se o daemon está rodando no host."
                 '''
             }
         }
@@ -80,12 +129,15 @@ pipeline {
         stage('Configure AWS Credentials') {
             steps {
                 sh '''
-                    # Opcional: Configurar credenciais da AWS se necessário
-                    # Caso você esteja usando o Jenkins Credentials Plugin, considere usar withCredentials no lugar
                     mkdir -p ~/.aws
                     
-                    # Verifique se as credenciais já estão configuradas via assumirRole do pod ou variáveis de ambiente
-                    aws sts get-caller-identity || echo "AWS credentials need to be configured"
+                    # Verificar se AWS está configurado corretamente
+                    aws sts get-caller-identity || {
+                        echo "AWS credentials não estão configuradas!"
+                        echo "Execute o pipeline com credenciais AWS configuradas corretamente."
+                        echo "Você pode usar Jenkins Credentials Plugin ou variáveis de ambiente AWS_ACCESS_KEY_ID e AWS_SECRET_ACCESS_KEY."
+                        exit 1
+                    }
                 '''
             }
         }
@@ -117,9 +169,6 @@ pipeline {
         stage('Configure EKS Access') {
             steps {
                 sh '''
-                    # Criar diretório .kube se não existir
-                    mkdir -p /var/jenkins_home/.kube
-                    
                     # Configurar acesso ao cluster EKS
                     aws eks update-kubeconfig --region $AWS_REGION --name $CLUSTER_NAME --kubeconfig /var/jenkins_home/.kube/config
                     
@@ -204,7 +253,7 @@ pipeline {
         always {
             echo 'Limpando recursos temporários...'
             sh '''
-                rm -rf awscliv2.zip aws stable.txt get-docker.sh || true
+                rm -rf /var/jenkins_home/tools/awscliv2.zip /var/jenkins_home/tools/aws /var/jenkins_home/tools/stable.txt || true
             '''
         }
     }
