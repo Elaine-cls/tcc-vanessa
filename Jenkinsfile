@@ -1,5 +1,5 @@
 pipeline {
-    agent any  // Using any available agent since your Jenkins server doesn't seem to have Docker plugin properly configured
+    agent any
     
     environment {
         AWS_REGION = 'us-east-2'
@@ -16,37 +16,40 @@ pipeline {
             }
         }
         
-        stage('Install Dependencies') {
+        stage('Setup Docker-in-Docker') {
             steps {
                 sh '''
-                    # Install AWS CLI if not present
-                    if ! command -v aws &> /dev/null; then
-                        echo "Installing AWS CLI..."
-                        curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
-                        unzip awscliv2.zip
-                        sudo ./aws/install
-                    fi
-                    
-                    # Install Docker if not present
-                    if ! command -v docker &> /dev/null; then
-                        echo "Installing Docker..."
-                        sudo apt-get update
-                        sudo apt-get install -y apt-transport-https ca-certificates curl software-properties-common
-                        curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
-                        sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
-                        sudo apt-get update
-                        sudo apt-get install -y docker-ce
-                        sudo usermod -aG docker jenkins
-                    fi
-                    
-                    # Install kubectl if not present
-                    if ! command -v kubectl &> /dev/null; then
-                        echo "Installing kubectl..."
-                        curl -LO "https://dl.k8s.io/release/stable.txt"
-                        curl -LO "https://dl.k8s.io/release/$(cat stable.txt)/bin/linux/amd64/kubectl"
-                        chmod +x kubectl
-                        sudo mv kubectl /usr/local/bin/
-                    fi
+                    # Using Docker CLI from the host (Docker socket)
+                    # This assumes your Jenkins container has the Docker socket mounted
+                    docker version || echo "Docker not available - make sure /var/run/docker.sock is mounted"
+                '''
+            }
+        }
+        
+        stage('Install AWS CLI') {
+            steps {
+                sh '''
+                    # Install AWS CLI without sudo
+                    curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+                    unzip -q awscliv2.zip
+                    ./aws/install -i /var/jenkins_home/aws-cli -b /var/jenkins_home/bin
+                    export PATH=/var/jenkins_home/bin:$PATH
+                    aws --version
+                '''
+            }
+        }
+        
+        stage('Install kubectl') {
+            steps {
+                sh '''
+                    # Install kubectl without sudo
+                    curl -LO "https://dl.k8s.io/release/stable.txt"
+                    curl -LO "https://dl.k8s.io/release/$(cat stable.txt)/bin/linux/amd64/kubectl"
+                    chmod +x kubectl
+                    mkdir -p /var/jenkins_home/bin
+                    mv kubectl /var/jenkins_home/bin/
+                    export PATH=/var/jenkins_home/bin:$PATH
+                    kubectl version --client
                 '''
             }
         }
@@ -57,6 +60,9 @@ pipeline {
                     def imageUri = "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${ECR_REPO}:${IMAGE_TAG}"
                     
                     sh '''
+                        # Set PATH to include our installed tools
+                        export PATH=/var/jenkins_home/bin:$PATH
+                        
                         # Login no Amazon ECR
                         aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com
 
@@ -75,7 +81,10 @@ pipeline {
         stage('Configure EKS Access') {
             steps {
                 sh '''
-                    aws eks update-kubeconfig --region $AWS_REGION --name $CLUSTER_NAME
+                    # Set PATH to include our installed tools
+                    export PATH=/var/jenkins_home/bin:$PATH
+                    
+                    aws eks update-kubeconfig --region $AWS_REGION --name $CLUSTER_NAME --kubeconfig /var/jenkins_home/.kube/config
                     kubectl version
                 '''
             }
@@ -84,11 +93,19 @@ pipeline {
         stage('Deploy other Kubernetes resources to EKS') {
             steps {
                 script {
-                    def kubernetesFiles = findFiles(glob: '.kubernetes/*.yaml')
-                    
-                    for (file in kubernetesFiles) {
-                        sh "kubectl apply -f ${file.path}"
-                    }
+                    sh '''
+                        # Set PATH to include our installed tools
+                        export PATH=/var/jenkins_home/bin:$PATH
+                        
+                        # Make sure kubernetes directory exists
+                        if [ -d ".kubernetes" ]; then
+                            for file in .kubernetes/*.yaml; do
+                                kubectl apply -f "$file"
+                            done
+                        else
+                            echo "No .kubernetes directory found"
+                        fi
+                    '''
                 }
             }
         }
