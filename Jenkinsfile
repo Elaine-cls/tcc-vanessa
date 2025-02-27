@@ -16,11 +16,7 @@ pipeline {
         stage('Build and Push Docker Image') {
             steps {
                 // Use credenciais se necessário
-               withCredentials([aws(credentialsId: 'aws-credentials', 
-                     accessKeyVariable: 'AWS_ACCESS_KEY_ID', 
-                     secretKeyVariable: 'AWS_SECRET_ACCESS_KEY')])
-
-                {
+            withAWS(credentials: 'aws-credentials', region: 'us-east-2') {
                     sh '''
                         # Login no Amazon ECR
                         aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com
