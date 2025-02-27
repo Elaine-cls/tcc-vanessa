@@ -1,5 +1,10 @@
 pipeline {
-    agent any
+    agent {
+        docker {
+            image 'amazonlinux' // Você pode usar outra imagem que já tenha Docker e AWS CLI
+            args '--privileged' // Necessário para rodar o Docker dentro do container
+        }
+    }
     environment {
         AWS_REGION = 'us-east-2'
         CLUSTER_NAME = 'k8s-cluster-tcc'
@@ -13,19 +18,22 @@ pipeline {
                 checkout scm
             }
         }
+        stage('Install Dependencies') {
+            steps {
+                sh '''
+                    yum install -y docker
+                    yum install -y aws-cli
+                '''
+            }
+        }
         stage('Build and Push Docker Image') {
             steps {
                 script {
                     def imageUri = "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${ECR_REPO}:${IMAGE_TAG}"
                     
                     sh '''
-                        # Login no Amazon ECR
                         aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com
-
-                        # Build da imagem Docker
                         docker build -t $ECR_REPO .
-
-                        # Tag e push para o ECR
                         docker tag $ECR_REPO:latest ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/$ECR_REPO:$IMAGE_TAG
                         docker push ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/$ECR_REPO:$IMAGE_TAG
                     '''
@@ -33,7 +41,6 @@ pipeline {
                 }
             }
         }
-
         stage('Configure EKS Access') {
             steps {
                 sh '''
@@ -42,20 +49,13 @@ pipeline {
                 '''
             }
         }
-
-
-        stage('Deploy other Kubernetes resources to EKS') {
+        stage('Deploy to EKS') {
             steps {
                 script {
-                    def kubernetesFiles = findFiles(glob: '.kubernetes/*.yaml')
-                    
-                    for (file in kubernetesFiles) {
-                        sh "kubectl apply -f ${file.path}"
-                    }
+                    sh "kubectl apply -f .kubernetes/"
                 }
             }
         }
-
     }
     post {
         success {
